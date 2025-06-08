@@ -1,0 +1,621 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Cutzz - Barber Appointment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .calendar-day {
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-day:hover:not(.disabled, .selected) {
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+        
+        .selected {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .time-slot:hover:not(.booked) {
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .booked {
+            background-color: #ef4444;
+            color: white;
+            cursor: not-allowed;
+        }
+        
+        .active-step {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .progress-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .progress-bar {
+            height: 4px;
+        }
+        
+        .checkmark {
+            display: none;
+        }
+        
+        .step-complete .checkmark {
+            display: inline-block;
+        }
+        
+        .step-complete .step-number {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">Can Cutzz</h1>
+            <p class="text-gray-600">Premium Haircuts & Styling</p>
+        </header>
+
+        <!-- Booking Container -->
+        <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Progress Steps -->
+            <div class="progress-container px-8 pt-8">
+                <div class="flex justify-between mb-4">
+                    <div class="step-item active-step relative flex flex-col items-center w-1/4">
+                        <div class="w-10 h-10 rounded-full border-2 border-blue-500 flex items-center justify-center mb-2">
+                            <span class="step-number">1</span>
+                            <i class="fas fa-check checkmark text-white text-sm hidden"></i>
+                        </div>
+                        <span class="text-xs font-medium text-blue-600">Service</span>
+                    </div>
+                    <div class="step-line h-1 bg-gray-200 flex-1 mx-2 mt-4"></div>
+                    <div class="step-item relative flex flex-col items-center w-1/4">
+                        <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center mb-2">
+                            <span class="step-number">2</span>
+                            <i class="fas fa-check checkmark text-white text-sm hidden"></i>
+                        </div>
+                        <span class="text-xs font-medium text-gray-500">Date</span>
+                    </div>
+                    <div class="step-line h-1 bg-gray-200 flex-1 mx-2 mt-4"></div>
+                    <div class="step-item relative flex flex-col items-center w-1/4">
+                        <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center mb-2">
+                            <span class="step-number">3</span>
+                            <i class="fas fa-check checkmark text-white text-sm hidden"></i>
+                        </div>
+                        <span class="text-xs font-medium text-gray-500">Time</span>
+                    </div>
+                    <div class="step-line h-1 bg-gray-200 flex-1 mx-2 mt-4"></div>
+                    <div class="step-item relative flex flex-col items-center w-1/4">
+                        <div class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center mb-2">
+                            <span class="step-number">4</span>
+                            <i class="fas fa-check checkmark text-white text-sm hidden"></i>
+                        </div>
+                        <span class="text-xs font-medium text-gray-500">Details</span>
+                    </div>
+                </div>
+                <div class="progress-bar bg-gray-200 mb-8">
+                    <div class="progress-bar-fill h-full bg-blue-500" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <!-- Step 1: Service Selection -->
+            <div class="step step-1 px-8 pb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Select a Service</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="service-card border rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all cursor-pointer">
+                        <h3 class="font-semibold text-lg text-gray-800">Haircut</h3>
+                        <p class="text-gray-600 text-sm mb-2">Classic haircut</p>
+                        <p class="text-blue-600 font-medium">20€</p>
+                    </div>
+                    <div class="service-card border rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all cursor-pointer">
+                        <h3 class="font-semibold text-lg text-gray-800">Beard Trim & Haircut</h3>
+                        <p class="text-gray-600 text-sm mb-2">Complete grooming package</p>
+                        <p class="text-blue-600 font-medium">25€</p>
+                    </div>
+                    <div class="service-card border rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all cursor-pointer">
+                        <h3 class="font-semibold text-lg text-gray-800">Kids Cut</h3>
+                        <p class="text-gray-600 text-sm mb-2">For ages 10 and under</p>
+                        <p class="text-blue-600 font-medium">15€</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button class="next-step bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Date Selection -->
+            <div class="step step-2 hidden px-8 pb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Select a Date</h2>
+                
+                <div class="mb-6 flex justify-between items-center">
+                    <button class="prev-month text-blue-600 hover:text-blue-800"><i class="fas fa-chevron-left mr-2"></i> Previous</button>
+                    <h3 class="month-year text-xl font-semibold">June 2023</h3>
+                    <button class="next-month text-blue-600 hover:text-blue-800">Next <i class="fas fa-chevron-right ml-2"></i></button>
+                </div>
+                
+                <div class="calendar grid grid-cols-7 gap-2 mb-8">
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Sun</div>
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Mon</div>
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Tue</div>
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Wed</div>
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Thu</div>
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Fri</div>
+                    <div class="text-center font-medium text-gray-500 text-sm py-2">Sat</div>
+                    
+                    <!-- Calendar days will be populated by JavaScript -->
+                </div>
+                
+                <div class="flex justify-between">
+                    <button class="prev-step bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-md transition-colors">Back</button>
+                    <button class="next-step bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Time Selection -->
+            <div class="step step-3 hidden px-8 pb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Select a Time</h2>
+                
+                <div class="selected-date mb-6">
+                    <p class="text-gray-600">Selected date: <span class="font-medium text-blue-600" id="display-date">Monday, June 12</span></p>
+                </div>
+                
+                <h3 class="font-semibold text-lg mb-4">Available Times</h3>
+                <div class="time-slots grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-8">
+                    <!-- Time slots will be populated by JavaScript -->
+                </div>
+                
+                <div class="flex justify-between">
+                    <button class="prev-step bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-md transition-colors">Back</button>
+                    <button class="next-step bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Customer Details -->
+            <div class="step step-4 hidden px-8 pb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Information</h2>
+                
+                <div class="appointment-summary mb-8 bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold mb-2">Appointment Summary</h3>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <p class="text-gray-600">Service:</p>
+                        <p class="font-medium" id="summary-service">Haircut</p>
+                        
+                        <p class="text-gray-600">Date:</p>
+                        <p class="font-medium" id="summary-date">Monday, June 12</p>
+                        
+                        <p class="text-gray-600">Time:</p>
+                        <p class="font-medium" id="summary-time">10:00 AM</p>
+                    </div>
+                </div>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="name" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="John Doe" required>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="john@example.com" required>
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="(123) 456-7890" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="special-requests" class="block text-sm font-medium text-gray-700 mb-1">Special Requests (Optional)</label>
+                        <textarea id="special-requests" rows="3" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Any special instructions for your appointment..."></textarea>
+                    </div>
+                </form>
+                
+                <div class="flex justify-between">
+                    <button class="prev-step bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-md transition-colors">Back</button>
+                    <button class="book-appointment bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition-colors">Book Appointment</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Confirmation -->
+            <div class="step step-5 hidden px-8 py-12 text-center">
+                <div class="mx-auto max-w-md">
+                    <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-check text-green-500 text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Appointment Confirmed!</h2>
+                    <p class="text-gray-600 mb-6">Your booking has been confirmed. We look forward to seeing you!</p>
+                    
+                    <div class="appointment-summary mb-8 bg-gray-50 p-4 rounded-lg text-left">
+                        <h3 class="font-semibold mb-4 text-center">Appointment Details</h3>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <p class="text-gray-600">Service:</p>
+                            <p class="font-medium" id="confirmation-service">Haircut</p>
+                            
+                            <p class="text-gray-600">Date:</p>
+                            <p class="font-medium" id="confirmation-date">Monday, June 12</p>
+                            
+                            <p class="text-gray-600">Time:</p>
+                            <p class="font-medium" id="confirmation-time">10:00 AM</p>
+                            
+                            <p class="text-gray-600">Name:</p>
+                            <p class="font-medium" id="confirmation-name">John Doe</p>
+                            
+                            <p class="text-gray-600">Email:</p>
+                            <p class="font-medium" id="confirmation-email">john@example.com</p>
+                            
+                            <p class="text-gray-600">Phone:</p>
+                            <p class="font-medium" id="confirmation-phone">(123) 456-7890</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info my-8">
+                        <h3 class="font-semibold mb-4">Can Cutzz Contact Info</h3>
+                        <p class="text-gray-600"><i class="fas fa-phone-alt mr-2"></i> Phone: <span class="font-medium">(555) 123-4567</span></p>
+                        <p class="text-gray-600"><i class="fas fa-envelope mr-2"></i> Email: <span class="font-medium">bookings@cancutzz.com</span></p>
+                        <p class="text-gray-600"><i class="fas fa-map-marker-alt mr-2"></i> Address: <span class="font-medium">123 Barber St, Your City</span></p>
+                    </div>
+                    
+                    <button class="new-booking bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors mx-2">
+                        <i class="fas fa-calendar-plus mr-2"></i> New Booking
+                    </button>
+                    <button class="go-home bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-md transition-colors mx-2">
+                        <i class="fas fa-home mr-2"></i> Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const steps = document.querySelectorAll('.step');
+            const stepItems = document.querySelectorAll('.step-item');
+            const progressBar = document.querySelector('.progress-bar-fill');
+            const serviceCards = document.querySelectorAll('.service-card');
+            const nextButtons = document.querySelectorAll('.next-step');
+            const prevButtons = document.querySelectorAll('.prev-step');
+            const bookButton = document.querySelector('.book-appointment');
+            const newBookingButton = document.querySelector('.new-booking');
+            const goHomeButton = document.querySelector('.go-home');
+            
+            // Calendar elements
+            const prevMonthBtn = document.querySelector('.prev-month');
+            const nextMonthBtn = document.querySelector('.next-month');
+            const monthYearEl = document.querySelector('.month-year');
+            const calendarDays = document.querySelector('.calendar');
+            
+            // Date and time elements
+            const timeSlotsContainer = document.querySelector('.time-slots');
+            const displayDateEl = document.getElementById('display-date');
+            const summaryServiceEl = document.getElementById('summary-service');
+            const summaryDateEl = document.getElementById('summary-date');
+            const summaryTimeEl = document.getElementById('summary-time');
+            const confirmationServiceEl = document.getElementById('confirmation-service');
+            const confirmationDateEl = document.getElementById('confirmation-date');
+            const confirmationTimeEl = document.getElementById('confirmation-time');
+            const confirmationNameEl = document.getElementById('confirmation-name');
+            const confirmationEmailEl = document.getElementById('confirmation-email');
+            const confirmationPhoneEl = document.getElementById('confirmation-phone');
+            
+            // Form elements
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            
+            // Variables
+            let currentStep = 1;
+            let selectedService = null;
+            let selectedDate = null;
+            let selectedTime = null;
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            
+            // Initialize
+            updateProgressBar();
+            renderCalendar(currentMonth, currentYear);
+            
+            // Event Listeners
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    serviceCards.forEach(c => c.classList.remove('border-blue-500', 'bg-blue-50'));
+                    this.classList.add('border-blue-500', 'bg-blue-50');
+                    selectedService = this.querySelector('h3').textContent;
+                    summaryServiceEl.textContent = selectedService;
+                    confirmationServiceEl.textContent = selectedService;
+                });
+            });
+            
+            nextButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Validate current step before proceeding
+                    if (currentStep === 1 && !selectedService) {
+                        alert('Please select a service');
+                        return;
+                    }
+                    
+                    if (currentStep === 2 && !selectedDate) {
+                        alert('Please select a date');
+                        return;
+                    }
+                    
+                    if (currentStep === 3 && !selectedTime) {
+                        alert('Please select a time');
+                        return;
+                    }
+                    
+                    goToStep(currentStep + 1);
+                });
+            });
+            
+            prevButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    goToStep(currentStep - 1);
+                });
+            });
+            
+            prevMonthBtn.addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+            
+            nextMonthBtn.addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+            
+            bookButton.addEventListener('click', function() {
+                // Validate form
+                if (!nameInput.value || !emailInput.value || !phoneInput.value) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                // Save customer details
+                confirmationNameEl.textContent = nameInput.value;
+                confirmationEmailEl.textContent = emailInput.value;
+                confirmationPhoneEl.textContent = phoneInput.value;
+                
+                goToStep(5);
+            });
+            
+            newBookingButton.addEventListener('click', function() {
+                // Reset form and selections
+                selectedService = null;
+                selectedDate = null;
+                selectedTime = null;
+                currentMonth = new Date().getMonth();
+                currentYear = new Date().getFullYear();
+                
+                // Reset inputs
+                nameInput.value = '';
+                emailInput.value = '';
+                phoneInput.value = '';
+                
+                // Reset UI elements
+                serviceCards.forEach(c => c.classList.remove('border-blue-500', 'bg-blue-50'));
+                timeSlotsContainer.querySelectorAll('.time-slot.selected').forEach(el => el.classList.remove('selected'));
+                
+                goToStep(1);
+            });
+            
+            goHomeButton.addEventListener('click', function() {
+                // This would normally redirect to the home page
+                alert('Redirecting to homepage...');
+            });
+            
+            // Functions
+            function goToStep(step) {
+                // Hide all steps
+                steps.forEach(stepEl => stepEl.classList.add('hidden'));
+                
+                // Show current step
+                document.querySelector(`.step-${step}`).classList.remove('hidden');
+                
+                // Update step indicators
+                stepItems.forEach((item, index) => {
+                    if (index < step - 1) {
+                        item.classList.add('step-complete');
+                        item.querySelector('.step-number').classList.add('hidden');
+                        item.querySelector('.checkmark').classList.remove('hidden');
+                    } else {
+                        item.classList.remove('step-complete');
+                        item.querySelector('.step-number').classList.remove('hidden');
+                        item.querySelector('.checkmark').classList.add('hidden');
+                    }
+                    
+                    // Update active step
+                    if (index === step - 1) {
+                        item.querySelector('div').classList.add('border-blue-500');
+                        item.querySelector('div').classList.remove('border-gray-300');
+                        item.querySelector('span.text-xs').classList.add('text-blue-600');
+                        item.querySelector('span.text-xs').classList.remove('text-gray-500');
+                    } else {
+                        item.querySelector('div').classList.remove('border-blue-500');
+                        item.querySelector('div').classList.add('border-gray-300');
+                        item.querySelector('span.text-xs').classList.remove('text-blue-600');
+                        item.querySelector('span.text-xs').classList.add('text-gray-500');
+                    }
+                });
+                
+                // Update progress bar
+                currentStep = step;
+                updateProgressBar();
+                
+                // If going to time selection step, update the display date
+                if (step === 3 && selectedDate) {
+                    displayDateEl.textContent = selectedDate.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    
+                    summaryDateEl.textContent = selectedDate.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    
+                    generateTimeSlots(selectedDate);
+                }
+            }
+            
+            function updateProgressBar() {
+                const progressPercentage = (currentStep / 4) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+            }
+            
+            function renderCalendar(month, year) {
+                // Update month/year display
+                monthYearEl.textContent = new Date(year, month).toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+                
+                // Get first day of month and total days in month
+                const firstDay = new Date(year, month, 1);
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Get starting day (0-6 where 0 is Sunday)
+                const startDay = firstDay.getDay();
+                
+                // Clear existing calendar days (except weekday headers)
+                while (calendarDays.children.length > 7) {
+                    calendarDays.removeChild(calendarDays.lastChild);
+                }
+                
+                // Add empty slots for days before the 1st
+                for (let i = 0; i < startDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'py-2';
+                    calendarDays.appendChild(emptyDay);
+                }
+                
+                // Add the days of the month
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day text-center py-2 rounded-full';
+                    
+                    // Check if date is in the past
+                    if (date < today) {
+                        dayElement.classList.add('disabled');
+                    } else {
+                        // Check if date is Sunday (closed)
+                        const isSunday = date.getDay() === 0;
+                        if (isSunday) {
+                            dayElement.classList.add('disabled');
+                        }
+                        
+                        dayElement.addEventListener('click', function() {
+                            if (!this.classList.contains('disabled')) {
+                                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                                this.classList.add('selected');
+                                selectedDate = date;
+                                
+                                // For immediate time slot generation when switching from step 3 back to step 2
+                                if (currentStep === 3) {
+                                    goToStep(3);
+                                }
+                            }
+                        });
+                    }
+                    
+                    dayElement.textContent = day;
+                    
+                    // Highlight today's date
+                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        dayElement.classList.add('font-bold');
+                    }
+                    
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+            
+            function generateTimeSlots(date) {
+                // Clear existing time slots
+                timeSlotsContainer.innerHTML = '';
+                
+                // Check if date is Saturday (different hours)
+                const isSaturday = date.getDay() === 6;
+                
+                let startHour = isSaturday ? 10 : 9;
+                let endHour = isSaturday ? 16 : 18;
+                
+                // For demo purposes, we'll generate times every 30 minutes
+                // In a real app, you would check against actual booked appointments
+                
+                // Randomly mark some slots as booked for demo
+                const bookedSlots = [
+                    `${startHour + 1}:00 ${startHour + 1 < 12 ? 'AM' : 'PM'}`,
+                    `${startHour + 3}:30 ${startHour + 3 < 12 ? 'AM' : 'PM'}`
+                ];
+                
+                selectedTime = null;
+                summaryTimeEl.textContent = '';
+                
+                for (let hour = startHour; hour < endHour; hour++) {
+                    for (let minutes = 0; minutes < 60; minutes += 30) {
+                        const timeString = `${hour}:${minutes.toString().padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
+                        const timeSlot = document.createElement('div');
+                        timeSlot.className = 'time-slot text-center py-2 rounded border border-gray-200';
+                        
+                        if (bookedSlots.includes(timeString)) {
+                            timeSlot.classList.add('booked');
+                            timeSlot.textContent = 'Booked';
+                        } else {
+                            timeSlot.textContent = timeString;
+                            
+                            timeSlot.addEventListener('click', function() {
+                                timeSlotsContainer.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                                this.classList.add('selected');
+                                selectedTime = timeString;
+                                summaryTimeEl.textContent = timeString;
+                                confirmationTimeEl.textContent = timeString;
+                            });
+                        }
+                        
+                        timeSlotsContainer.appendChild(timeSlot);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
